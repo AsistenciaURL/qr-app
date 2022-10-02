@@ -1,9 +1,17 @@
-import React, { useState, useEffect } from "react";
-import { Text, View, StyleSheet, Button } from "react-native";
+import React, { useState, useEffect, useCallback } from "react";
+import {
+  Text,
+  View,
+  StyleSheet,
+  Button,
+  Linking,
+  Platform,
+} from "react-native";
 import { BarCodeScanner } from "expo-barcode-scanner";
+import * as Application from "expo-application";
 
-export default function Scanner() {
-  const [hasPermission, setHasPermission] = useState(null);
+const Scanner = () => {
+  const [hasPermission, setHasPermission] = useState<null | boolean>(null);
   const [scanned, setScanned] = useState(false);
 
   useEffect(() => {
@@ -13,9 +21,24 @@ export default function Scanner() {
     })();
   }, []);
 
-  const handleBarCodeScanned = ({ type, data }) => {
+  const handleBarCodeScanned = async ({ data }: { data: string }) => {
     setScanned(true);
-    alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+
+    let uniqueId
+    if (Platform.OS === "android") {
+      uniqueId = Application.androidId;
+    }
+    if (Platform.OS === "ios") {
+      uniqueId = await Application.getIosIdForVendorAsync();
+    }
+    alert(`DATA: ${data} ID: ${uniqueId}`);
+    // const supported = await Linking.canOpenURL(data);
+
+    // if (supported) {
+    //   await Linking.openURL(data);
+    // } else {
+    //   alert(`Don't know how to open this URL: ${data}`);
+    // }
   };
 
   if (hasPermission === null) {
@@ -31,12 +54,9 @@ export default function Scanner() {
         onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
         style={StyleSheet.absoluteFillObject}
       />
-      {scanned && (
-        <Button title={"Tap to Scan Again"} onPress={() => setScanned(false)} />
-      )}
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -45,3 +65,5 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 });
+
+export default Scanner;

@@ -6,6 +6,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 
 import Home from './screens/Home';
+import Test from './screens/Test';
 
 const Stack = createStackNavigator();
 
@@ -16,6 +17,7 @@ function App() {
     <Stack.Navigator>
       <Stack.Screen name="Home" component={Home} />
       <Stack.Screen name="Scanner" component={Scanner} />
+      <Stack.Screen name="Test" component={Test} />
     </Stack.Navigator>
   );
 }
@@ -32,9 +34,7 @@ const styles = StyleSheet.create({
 export default () => {
   return (
     <NavigationContainer>
-     
         <App />
-      
     </NavigationContainer>
   )
 }
