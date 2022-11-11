@@ -65,7 +65,7 @@ const Scanner = () => {
       const supported = await Linking.canOpenURL(data);
 
       if (supported) {
-        const registerDevice = await fetch(`http://192.168.0.3:8000/register/`, {
+        const registerDevice = await fetch(`http://192.168.0.7:8000/register/`, {
           method: "POST",
           body: JSON.stringify({
             id: uniqueId,
@@ -76,7 +76,7 @@ const Scanner = () => {
 
         if (registerDeviceData.status === "success") {
           const response = await fetch(
-            `http://192.168.0.3:8000/validate/${qrId}`,
+            `http://192.168.0.7:8000/validate/${qrId}`,
             {
               method: "POST",
               body: JSON.stringify({
@@ -95,7 +95,7 @@ const Scanner = () => {
           );
           if (resData.status === "success") {
             await Linking.openURL(
-              `http://192.168.0.3:3000/assistance/${resData.data}/${uniqueId}`
+              `http://192.168.0.7:3000/assistance/${resData.data}/${uniqueId}`
             );
           }
         }
