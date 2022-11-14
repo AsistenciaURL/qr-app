@@ -47,7 +47,7 @@ const Scanner = () => {
 
   const handleBarCodeScanned = async ({ data }: { data: string }) => {
     setScanned(true);
-    alert('Scanned')
+    alert("Scanned");
 
     let uniqueId;
     if (Platform.OS === "android") {
@@ -57,50 +57,44 @@ const Scanner = () => {
       uniqueId = await Application.getIosIdForVendorAsync();
     }
 
-    const regex = /http:\/\/localhost:3000\/assistance\/[0-9]+/gm;
+    const regex = /qrcode\/[0-9]+/gm;
     const validUrl = regex.exec(data);
     if (validUrl && validUrl.length === 1) {
-      const qrId = data.replace("http://localhost:3000/assistance/", "");
+      const qrId = data.replace("qrcode/", "");
 
-      const supported = await Linking.canOpenURL(data);
+      const registerDevice = await fetch(`http://192.168.0.3:8000/register/`, {
+        method: "POST",
+        body: JSON.stringify({
+          id: uniqueId,
+        }),
+        headers: { "Content-Type": "application/json" },
+      });
+      const registerDeviceData = await registerDevice.json();
 
-      if (supported) {
-        const registerDevice = await fetch(`http://192.168.0.7:8000/register/`, {
-          method: "POST",
-          body: JSON.stringify({
-            id: uniqueId,
-          }),
-          headers: { "Content-Type": "application/json" },
-        });
-        const registerDeviceData = await registerDevice.json();
-
-        if (registerDeviceData.status === "success") {
-          const response = await fetch(
-            `http://192.168.0.7:8000/validate/${qrId}`,
-            {
-              method: "POST",
-              body: JSON.stringify({
-                latitude: location.coords.latitude,
-                longitude: location.coords.longitude,
-                deviceId: uniqueId,
-              }),
-              headers: { "Content-Type": "application/json" },
-            }
-          );
-          const resData = await response.json();
-          alert(
-            `DATA: ${data} ID: ${uniqueId} Locación ${JSON.stringify(
-              location
-            )} ${JSON.stringify(resData)}`
-          );
-          if (resData.status === "success") {
-            await Linking.openURL(
-              `http://192.168.0.7:3000/assistance/${resData.data}/${uniqueId}`
-            );
+      if (registerDeviceData.status === "success") {
+        const response = await fetch(
+          `http://192.168.0.3:8000/validate/${qrId}`,
+          {
+            method: "POST",
+            body: JSON.stringify({
+              latitude: location.coords.latitude,
+              longitude: location.coords.longitude,
+              deviceId: uniqueId,
+            }),
+            headers: { "Content-Type": "application/json" },
           }
+        );
+        const resData = await response.json();
+        alert(
+          `DATA: ${data} ID: ${uniqueId} Locación ${JSON.stringify(
+            location
+          )} ${JSON.stringify(resData)}`
+        );
+        if (resData.status === "success") {
+          await Linking.openURL(
+            `http://192.168.0.3:3000/assistance/${resData.data}/${uniqueId}`
+          );
         }
-      } else {
-        alert(`Don't know how to open this URL: ${data}`);
       }
     } else {
       alert("El QR escaneado no pertenece al sistema.");
