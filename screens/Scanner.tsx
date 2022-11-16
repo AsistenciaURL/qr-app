@@ -62,7 +62,7 @@ const Scanner = () => {
     if (validUrl && validUrl.length === 1) {
       const qrId = data.replace("qrcode/", "");
 
-      const registerDevice = await fetch(`http://192.168.0.3:8000/register/`, {
+      const registerDevice = await fetch(`https://bddoncencia.herokuapp.com/register/`, {
         method: "POST",
         body: JSON.stringify({
           id: uniqueId,
@@ -73,7 +73,7 @@ const Scanner = () => {
 
       if (registerDeviceData.status === "success") {
         const response = await fetch(
-          `http://192.168.0.3:8000/validate/${qrId}`,
+          `https://bddoncencia.herokuapp.com/validate/${qrId}`,
           {
             method: "POST",
             body: JSON.stringify({
@@ -92,7 +92,7 @@ const Scanner = () => {
         );
         if (resData.status === "success") {
           await Linking.openURL(
-            `http://192.168.0.3:3000/assistance/${resData.data}/${uniqueId}`
+            `https://docencia-web.vercel.app/assistance/${resData.data}/${uniqueId}`
           );
         }
       }
