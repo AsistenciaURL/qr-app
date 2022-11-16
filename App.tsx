@@ -1,12 +1,24 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { StyleSheet, Text, View, Button } from 'react-native';
+import Scanner from './screens/Scanner';
+import { createStackNavigator } from '@react-navigation/stack';
+import { NavigationContainer } from '@react-navigation/native';
 
-export default function App() {
+import Home from './screens/Home';
+import Test from './screens/Test';
+
+const Stack = createStackNavigator();
+
+
+
+function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <Stack.Navigator>
+      <Stack.Screen name="Home" component={Home} />
+      <Stack.Screen name="Scanner" component={Scanner} />
+      <Stack.Screen name="Test" component={Test} />
+    </Stack.Navigator>
   );
 }
 
@@ -18,3 +30,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+
+export default () => {
+  return (
+    <NavigationContainer>
+        <App />
+    </NavigationContainer>
+  )
+}
